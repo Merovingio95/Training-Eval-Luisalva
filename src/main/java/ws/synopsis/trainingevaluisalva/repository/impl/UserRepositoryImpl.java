@@ -1,6 +1,8 @@
 package ws.synopsis.trainingevaluisalva.repository.impl;
 
 import org.springframework.stereotype.Repository;
+import lombok.AllArgsConstructor;
+import ws.synopsis.trainingevaluisalva.exception.TrainingFieldException;
 import ws.synopsis.trainingevaluisalva.model.User;
 import ws.synopsis.trainingevaluisalva.repository.UserRepository;
 
@@ -12,25 +14,47 @@ import java.util.stream.Collectors;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
-    private static final Map<Long, User> USERS;
+    private static final Map<Long, User> USERS = new HashMap<Long, User>();
+    private static Long id = 1L;
 
-    static {
-    	USERS = new HashMap<Long, User>();
-    	USERS.put(1L, User.builder().idUser(1L).name("Elvis").lastName("Perez").build());
-    	USERS.put(2L, User.builder().idUser(2L).name("Jhonatan").lastName("Evan\u00E0n").build());
-    	USERS.put(3L, User.builder().idUser(3L).name("Arturo").lastName("Nu\u00F1ez").build());
-    	USERS.put(4L, User.builder().idUser(4L).name("Luis").lastName("Quinto").build());
-    }
+	@Override
+	public boolean add(User user) {
+		List<User> users = USERS.entrySet().stream().map(k -> k.getValue()).collect(Collectors.toList());
+		user.setIdUser(id);
+		USERS.put(id++, user);
+		return true;
+	}
 
-    @Override
-    public List<User> list() {
-        return USERS.entrySet().stream().map(k -> k.getValue()).collect(Collectors.toList());
-    }
+	@Override
+	public List<User> list() {
+		// TODO Auto-generated method stub
+		return USERS.entrySet().stream().map(k -> k.getValue()).collect(Collectors.toList());
+	}
 
-    @Override
-    public void add(User user) {
-        long id = (long) USERS.size();
-        user.setIdUser(id);
-        USERS.put(id, user);
-    }
+	@Override
+	public boolean update(User user) throws TrainingFieldException {
+		User userToChange = USERS.get(user.getIdUser());
+		if (userToChange==null) return false;
+		List<User> users = USERS.entrySet().stream().map(k -> k.getValue()).collect(Collectors.toList());
+		userToChange.setName(user.getName());
+		userToChange.setLastName(user.getLastName());
+		return true;
+	}
+
+	@Override
+	public User getUser(Long idUser) throws TrainingFieldException{
+		// TODO Auto-generated method stub
+		User userToGet = USERS.get(idUser);
+		if (userToGet==null) throw new TrainingFieldException("El Id ingresado no existe en la BD");
+		return USERS.get(idUser);
+	}
+
+	@Override
+	public boolean remove(Long idUser) {
+		// TODO Auto-generated method stub
+		User userToDelete = USERS.get(idUser);
+		if(userToDelete==null) return false;
+		USERS.remove(idUser);
+		return true;
+	}
 }
