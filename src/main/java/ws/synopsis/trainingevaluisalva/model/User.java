@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
     private Long idUser;
-    private String namUser;
-    private String lnmUser;
-    private String dirUser;
+    private String name;
+    private String lastName;
 }
